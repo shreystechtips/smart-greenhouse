@@ -9,13 +9,16 @@ sgp30 = adafruit_sgp30.Adafruit_SGP30(i2c)
 print("SGP30 serial #", [hex(i) for i in sgp30.serial])
 sgp30.iaq_init()
 sgp30.set_iaq_baseline(0x8973, 0x8AAE)
+sgp30.set_iaq_humidity(0.015)
+#eCO2 = 0x8973, TVOC = 0x8aae
 elapsed_sec = 0
 while True:
 	try:
-		print("eCO2 = %d ppm \t TVOC = %d ppb" % (sgp30.eCO2, sgp30.TVOC))
+		co2,tvoc = sgp30.iaq_measure() 
+		print(f'eCO2 = {co2} ppm \t TVOC = {tvoc} ppb')
 	except:
 		print('reading error')
-	time.sleep(0.5)
+	time.sleep(1)
 	elapsed_sec += 1
 	if elapsed_sec > 10:
 		elapsed_sec = 0

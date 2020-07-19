@@ -28,6 +28,7 @@ class SensorData:
 		print("SGP30 serial #", [hex(i) for i in self.sgp30.serial])
 		self.sgp30.iaq_init()
 		self.sgp30.set_iaq_baseline(0x8973, 0x8AAE)
+		self.sgp30.set_iaq_humidity(0.015)			
 
 	def collect(self,sc=None):
 		sgp30 =  self.sgp30
@@ -65,12 +66,20 @@ class SensorData:
 	def loop(self):
 		s.enter(0,1,data_collector.collect,(s,))
 		s.run()
+	def update_timeloop(self,event):
+		global FIREBASE_UPDATE_SEC
+		if isinstance(event.data,int) and event.data > 0 and not event.data == FIREBASE_UPDATE_SEC:
+			print(event.data)
+			FIREBASE_UPDATE_SEC = event.data
+		self.firebaseref.child("updatesec").set(FIREBASE_UPDATE_SEC)
 	def update(self, event):
-		print(event.data,event.path,)
+		
 		if event.data:
+			print(event.data)
 			self.collect()
 		self.firebaseref.child("forceupdate").set(False)
 
 data_collector = SensorData()
 firebase_admin.db.reference('sensordata/forceupdate').listen(data_collector.update)
+firebase_admin.db.reference('sensordata/updatesec').listen(data_collector.update_timeloop)
 data_collector.loop()
