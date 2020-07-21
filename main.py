@@ -36,6 +36,8 @@ class SensorData:
 		firebaseref = self.firebaseref
 		if sgp30.TVOC >= 0:
 			try:
+				if sc:
+					s.enter(FIREBASE_UPDATE_SEC, 1, self.collect, (sc,))
 				utcdate = local_time.localize(datetime.now()).astimezone(pytz.utc).strftime("%Y-%m-%dT%H:%M:%S")
 				firebaseref.update({
 					utcdate:{
@@ -43,13 +45,10 @@ class SensorData:
 						'humid':sensor.relative_humidity,
 						'co2':sgp30.eCO2,
 						'tvoc':sgp30.TVOC,
-						'imgpath': f'imgs/{utcdate}.png'
-					# `	'imgpath': f'imgs/{utcdate}.png'
+						# 'imgpath': f'imgs/{utcdate}.png'
 					}
 				})
-				print(f'saved data for {utcdate}')
-				if sc:
-					s.enter(FIREBASE_UPDATE_SEC, 1, self.collect, (sc,))
+				print(f'saved data for {utcdate}')				
 			except Exception as e:
 				print(e)
 		else:
