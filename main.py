@@ -8,6 +8,7 @@ from firebase_admin import credentials
 from firebase_admin import db
 from datetime import datetime
 import pytz
+import const
 
 
 FIREBASE_UPDATE_SEC = 60
@@ -38,7 +39,7 @@ class SensorData:
 			try:
 				if sc:
 					s.enter(FIREBASE_UPDATE_SEC, 1, self.collect, (sc,))
-				utcdate = local_time.localize(datetime.now()).astimezone(pytz.utc).strftime("%Y-%m-%dT%H:%M:%S")
+				utcdate = local_time.localize(datetime.now()).astimezone(pytz.utc).strftime(const.TIME_FMT)
 				firebaseref.update({
 					utcdate:{
 						'temp': sensor.temperature,
