@@ -19,6 +19,7 @@ firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://greenhouse-85aa5.firebaseio.com'
 })
 s = sched.scheduler(time.time, time.sleep)
+
 class SensorData:
 	def __init__(self):
 		self.firebaseref = db.reference('sensordata')
@@ -29,7 +30,13 @@ class SensorData:
 		print("SGP30 serial #", [hex(i) for i in self.sgp30.serial])
 		self.sgp30.iaq_init()
 		self.sgp30.set_iaq_baseline(0x8973, 0x8AAE)
-		self.sgp30.set_iaq_humidity(0.015)			
+		calibrate_gas_sensor(default=True)	
+
+	def calibrate_gas_sensor(self, default = False):
+		try:
+			self.sgp30.set_iaq_humidity((124.029*(self.sensor.relative_humidity/100))/(461.5*(self.sensor.temperature+273.15)) if not default else 0.015)
+		except:
+			pass
 
 	def collect(self,sc=None):
 		sgp30 =  self.sgp30
