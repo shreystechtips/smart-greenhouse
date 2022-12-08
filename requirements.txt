@@ -5,7 +5,7 @@ adafruit-circuitpython-si7021==3.2.1
 Adafruit-PlatformDetect==2.14.1
 Adafruit-PureIO==1.1.5
 asn1crypto==0.24.0
-certifi==2018.8.24
+certifi==2022.12.7
 chardet==3.0.4
 cryptography==2.6.1
 entrypoints==0.3
